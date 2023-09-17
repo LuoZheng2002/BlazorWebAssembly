@@ -1,11 +1,32 @@
 ﻿@page "/datamining"
-
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 <h4>DataMining</h4>
 <div id="div">0</div>
-<script src="scripts/datamining.js"></script>
 <canvas id="canvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
-
+<button @onclick="OnButton1Click">Start</button>
+<button @onclick="OnButton2Click">End</button>
 
 @code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Add your JavaScript code here
+            await JSRuntime.InvokeVoidAsync("startDataMining");
+        }
+    }
+    void OnButton1Click()
+    {
+        JSRuntime.InvokeVoidAsync("startDataMining");
+    }
+    void OnButton2Click()
+    {
+        JSRuntime.InvokeVoidAsync("endDataMining");
+    }
 
+    public async void Dispose()
+    {
+        await JSRuntime.InvokeVoidAsync("endDataMining");
+    }
 }

@@ -1,38 +1,56 @@
-﻿let canvas = document.getElementById('canvas');
-let context = canvas.getContext('2d');
-let div = document.getElementById('div');
-let image = new Image();
-image.src = 'Images/Hatsune_Miku.png';
-
-
-
-// Set up the game loop
-const frameRate = 60; // Frames per second
-const frameDelay = 1000 / frameRate; // Delay between frames in milliseconds
-let lastFrameTime = 0;
-let x = 150;
-let y = 150;
-let accumulatedTime = 0;
-function gameLoop(timestamp) {
-    // Calculate the time since the last frame
-    const elapsedTime = timestamp - lastFrameTime;
-    accumulatedTime = accumulatedTime + elapsedTime;
-    // Only update and render the game if enough time has passed
-    if (elapsedTime >= frameDelay) {
-        // Clear the canvas
-        let realX = x + 150 * Math.sin(accumulatedTime/1000);
-        let realY = y + 150 * Math.sin(accumulatedTime * Math.PI/1000);
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(image, realX, realY, 200, 200);
-        div.innerText = Number(div.innerText) + 1;
-
-        // Store the current timestamp as the last frame time
-        lastFrameTime = timestamp;
+﻿class DataMiningViewModel {
+    constructor() {
+        this.canvas = document.getElementById('canvas');
+        this.context = canvas.getContext('2d');
+        this.div = document.getElementById('div');
+        this.div.innerText = '0';
+        this.image = new Image();
+        this.image.src = 'Images/Hatsune_Miku.png';
+        this.frameRate = 60;
+        this.frameDelay = 1000 / this.frameRate;
+        this.x = 150;
+        this.y = 150;
+        this.accumulatedTime = 0;
+        this.lastFrameTime = 0;
+        this.animationID = 0;
     }
-    // some comments
-    // Request the next frame
-    requestAnimationFrame(gameLoop);
+    doLoop(timestamp) {
+        // Calculate the time since the last frame
+        const elapsedTime = timestamp - this.lastFrameTime;
+        this.accumulatedTime = this.accumulatedTime + elapsedTime;
+        // Only update and render the game if enough time has passed
+        if (elapsedTime >= this.frameDelay) {
+            // Clear the canvas
+            let realX = this.x + 150 * Math.sin(this.accumulatedTime / 1000);
+            let realY = this.y + 150 * Math.sin(this.accumulatedTime * Math.PI / 1000);
+            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.context.drawImage(this.image, realX, realY, 200, 200);
+            this.div.innerText = Number(this.div.innerText) + 1;
+
+            // Store the current timestamp as the last frame time
+            this.lastFrameTime = timestamp;
+        }
+    }
+}
+var dataMiningViewModel; // uninitialized
+function gameLoop(timestamp) {
+    dataMiningViewModel.doLoop(timestamp);
+    dataMiningViewModel.animationID = requestAnimationFrame(gameLoop);
 }
 
+function startDataMining() {
+    if (dataMiningViewModel != null) {
+        endDataMining();
+    }
+    console.log('Data Mining Started!');
+    dataMiningViewModel = new DataMiningViewModel();
+    dataMiningViewModel.animationID = requestAnimationFrame(gameLoop);
+}
 
-requestAnimationFrame(gameLoop);
+function endDataMining() {
+    if (dataMiningViewModel != null) {
+        console.log('Data Mining Ended!');
+        cancelAnimationFrame(dataMiningViewModel.animationID);
+        dataMiningViewModel = null;
+    }
+}

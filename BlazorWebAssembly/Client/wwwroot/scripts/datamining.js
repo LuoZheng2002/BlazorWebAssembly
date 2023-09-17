@@ -29,7 +29,7 @@ function gameLoop(timestamp) {
         // Store the current timestamp as the last frame time
         lastFrameTime = timestamp;
     }
-
+    // some comments
     // Request the next frame
     requestAnimationFrame(gameLoop);
 }
